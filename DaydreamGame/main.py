@@ -319,6 +319,11 @@ def draw(self):
                 self.draw_ui()
             pygame.display.flip()
 
+
+async def main():
+    game = MazeGame()
+    await game.run()
+
 if __name__=="__main__":
     asyncio.run(main())
 
@@ -329,8 +334,3 @@ async def run(self):
             self.update()
             self.draw()
             await asyncio.sleep(0)  # allow asyncio loop to yield
-
-# ------------ Entry Point ------------
-async def main():
-    game = MazeGame()
-    await game.run()
