@@ -319,15 +319,12 @@ def draw(self):
                 self.draw_ui()
             pygame.display.flip()
 
-def run(self):
-        while True:
-            self.clock.tick(FPS)
-            self.handle_events()
-            self.update()
-            self.draw()
+async def main():
+    game = MazeGame()
+    await game.run()
 
 if __name__=="__main__":
-    asyncio.run()
+    asyncio.run(main())
 
 async def run(self):
         while True:
