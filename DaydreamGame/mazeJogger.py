@@ -242,4 +242,88 @@ class MazeGame:
         # if invalid, cancel attempt but still consume?
         self.awaiting_break_direction = False
         return False
+    
+def use_draw(self):
+        if self.abilities[ABILITY_DRAW]<=0: return False
+        self.path_hint=find_path(self.grid,(self.player_x,self.player_y),self.exit)
+        self.revealed_path_timer=FPS*8
+        self.abilities[ABILITY_DRAW]-=1
+        return True
 
+def handle_events(self):
+        for ev in pygame.event.get():
+            if ev.type==pygame.QUIT: sys.exit()
+            if ev.type==pygame.KEYDOWN:
+                if self.state=="title" and ev.key==pygame.K_SPACE:
+                    self.state="playing"
+                if self.state in ("gameover","victory"):
+                    if ev.key==pygame.K_r:
+                        self.reset_game()
+                        self.state="title"
+                if self.state=="playing":
+                    if ev.key==pygame.K_1: self.use_gain()
+                    elif ev.key==pygame.K_2: self.start_break()
+                    elif ev.key==pygame.K_3: self.use_draw()
+                    elif self.awaiting_break_direction:
+                        if ev.key in (pygame.K_UP, pygame.K_w): self.finish_break(0,-1)
+                        elif ev.key in (pygame.K_DOWN, pygame.K_s): self.finish_break(0,1)
+                        elif ev.key in (pygame.K_LEFT, pygame.K_a): self.finish_break(-1,0)
+                        elif ev.key in (pygame.K_RIGHT, pygame.K_d): self.finish_break(1,0)
+
+def update(self):
+        if self.state=="playing":
+            if self.flash_red_timer>0:
+                self.flash_red_timer-=1
+                return  # pause movement/timer while flashing
+
+            keys = pygame.key.get_pressed()
+            if not self.awaiting_break_direction:  # disable movement if waiting for break direction
+                self.move_delay-=1
+                if self.move_delay<=0:
+                    dx=dy=0
+                    if keys[pygame.K_UP] or keys[pygame.K_w]: dy=-1
+                    if keys[pygame.K_DOWN] or keys[pygame.K_s]: dy=1
+                    if keys[pygame.K_LEFT] or keys[pygame.K_a]: dx=-1
+                    if keys[pygame.K_RIGHT] or keys[pygame.K_d]: dx=1
+                    if dx!=0 or dy!=0:
+                        self.try_move(dx,dy)
+                        self.move_delay=6
+
+            if self.revealed_path_timer>0:
+                self.revealed_path_timer-=1
+                if self.revealed_path_timer<=0:
+                    self.path_hint=None
+
+            if self.timer_running:
+                seconds_passed = (pygame.time.get_ticks()-self.start_ticks)//1000
+                remaining = self.time_limit-seconds_passed
+                if remaining<=0:
+                    self.state="gameover"
+                else:
+                    self.time_left=remaining
+
+def draw(self):
+        if self.state=="title":
+            self.draw_title()
+        elif self.state=="victory":
+            self.draw_victory()
+        elif self.state=="gameover":
+            self.draw_gameover()
+        elif self.state=="playing":
+            if self.flash_red_timer>0:
+                self.screen.fill(RED)
+            else:
+                self.screen.fill(BLACK)
+                self.draw_grid()
+                self.draw_ui()
+            pygame.display.flip()
+
+def run(self):
+        while True:
+            self.clock.tick(FPS)
+            self.handle_events()
+            self.update()
+            self.draw()
+
+if __name__=="__main__":
+    MazeGame().run()
