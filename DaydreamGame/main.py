@@ -319,10 +319,6 @@ def draw(self):
                 self.draw_ui()
             pygame.display.flip()
 
-async def main():
-    game = MazeGame()
-    await game.run()
-
 if __name__=="__main__":
     asyncio.run(main())
 
