@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import asyncio
 from collections import deque
 
 # -------- CONFIG ----------
@@ -326,4 +327,17 @@ def run(self):
             self.draw()
 
 if __name__=="__main__":
-    MazeGame().run()
+    asyncio.run()
+
+async def run(self):
+        while True:
+            self.clock.tick(FPS)
+            self.handle_events()
+            self.update()
+            self.draw()
+            await asyncio.sleep(0)  # allow asyncio loop to yield
+
+# ------------ Entry Point ------------
+async def main():
+    game = MazeGame()
+    await game.run()
